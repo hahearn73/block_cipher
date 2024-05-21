@@ -6,21 +6,32 @@
 #define KEY_LENGTH 1
 
 void encrypt(FILE *input_file, FILE *output_file, uint8_t key) {
-    uint8_t byte;
+    char byte;
     while ((byte = fgetc(input_file)) != EOF) {
         byte ^= key;
         if (fputc(byte, output_file) == EOF) {
             perror("Error writing to output file");
             fclose(input_file);
             fclose(output_file);
-            return EXIT_FAILURE;
+            exit(EXIT_FAILURE);
         }
         key = byte;
     }
 }
 
 void decrypt(FILE *input_file, FILE *output_file, uint8_t key) {
-    return;
+    char byte, prev_cipher;
+    while ((byte = fgetc(input_file)) != EOF) {
+        prev_cipher = byte;
+        byte ^= key;
+        if (fputc(byte, output_file) == EOF) {
+            perror("Error writing to output file");
+            fclose(input_file);
+            fclose(output_file);
+            exit(EXIT_FAILURE);
+        }
+        key = prev_cipher;
+    }
 }
 
 int main(int argc, char *argv[]) {
@@ -69,13 +80,13 @@ int main(int argc, char *argv[]) {
         decrypt(input_file, output_file, key);
     }
 
+    // close files
     if (ferror(input_file)) {
         perror("Error reading input file");
         fclose(input_file);
         return EXIT_FAILURE;
     }
     fclose(input_file);
-
     if (ferror(output_file)) {
         perror("Error reading output file");
         fclose(output_file);
