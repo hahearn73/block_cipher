@@ -3,11 +3,20 @@
 #include <string.h>
 #include <stdint.h>
 
-#define BLOCK_SIZE 1024
 #define KEY_LENGTH 1
 
 void encrypt(FILE *input_file, FILE *output_file, uint8_t key) {
-    return;
+    uint8_t byte;
+    while ((byte = fgetc(input_file)) != EOF) {
+        byte ^= key;
+        if (fputc(byte, output_file) == EOF) {
+            perror("Error writing to output file");
+            fclose(input_file);
+            fclose(output_file);
+            return EXIT_FAILURE;
+        }
+        key = byte;
+    }
 }
 
 void decrypt(FILE *input_file, FILE *output_file, uint8_t key) {

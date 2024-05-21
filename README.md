@@ -1,2 +1,2 @@
 # Block Cipher
-This is a simple xor block cipher.
+This is a simple xor stream cipher.
