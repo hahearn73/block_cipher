@@ -3,12 +3,12 @@ CFLAGS = -Wall -Wextra -pedantic -std=c99
 
 .PHONY: all clean
 
-all: stream_cipher
+all: block_cipher
 
-all: stream_cipher
+all: block_cipher
 
-stream_cipher: stream_cipher.c
+block_cipher: block_cipher.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 clean:
-	rm -f stream_cipher *.o a.out
+	rm -f block_cipher *.o a.out
