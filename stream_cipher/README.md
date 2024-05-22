@@ -2,7 +2,7 @@
 This is a simple xor stream cipher.
 
 ### Compilation
-Run `make` to create executable and `make clean` to clean directory
+Run `make` to create executable and `make clean` to clean directory,
 
 ### Execution
 ```

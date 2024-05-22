@@ -17,7 +17,7 @@ void encrypt(FILE *input_file, FILE *output_file, uint32_t key) {
         if (bytes_read != BLOCK_SIZE) { // handle EOF
             if (bytes_read == 0) { // file length % BLOCK_SIZE = 0
                 for (size_t i = 0; i < BLOCK_SIZE; i++) {
-                    fputc(0, output_file);
+                    fputc(0, output_file); // add padding 0s
                 }
                 return;
             }
@@ -44,44 +44,24 @@ void encrypt(FILE *input_file, FILE *output_file, uint32_t key) {
         key = output_bytes;
     }
 
-    char final_block[BLOCK_SIZE];
+    // include padding if not already done
+    char padding[BLOCK_SIZE];
     for (size_t i = 0; i < BLOCK_SIZE; i++) {
-        final_block[i] = bytes_remaining;
+        padding[i] = bytes_remaining;
     }
-    bytes_written = fwrite(&final_block, 1, BLOCK_SIZE, output_file);
+    bytes_written = fwrite(&padding, 1, BLOCK_SIZE, output_file);
 }
 
 void decrypt(FILE *input_file, FILE *output_file, uint32_t key) {
-    // char output_byte, input_byte;
-    // while ((input_byte = fgetc(input_file)) != EOF) {
-    //     output_byte = input_byte ^ key;
-    //     if (fputc(output_byte, output_file) == EOF) {
-    //         perror("Error writing to output file");
-    //         fclose(input_file);
-    //         fclose(output_file);
-    //         exit(EXIT_FAILURE);
-    //     }
-    //     key = input_byte;
-    // }
     char buffer[BLOCK_SIZE];
     uint32_t input_bytes, output_bytes, first_output_buffer, second_output_buffer = 0;
     int eof_reached, past_first_iter, past_second_iter = 0;
     size_t bytes_read, bytes_written;
     
-    while (!eof_reached) {
+    while (1) {
         bytes_read = fread(buffer, 1, BLOCK_SIZE, input_file);
 
         if (bytes_read != BLOCK_SIZE) { // handle EOF
-            // if (bytes_read == 1) { // just read EOF
-            //     bytes_written = fwrite((char *)&first_output_buffer, 1, BLOCK_SIZE, output_file);
-            //     return;
-            // }
-            // eof_reached = 1;
-            // char bytes_remaining = BLOCK_SIZE - bytes_read;
-            // memcpy(&input_bytes, buffer, bytes_read);
-            // for (size_t i = 0; i < bytes_remaining; i++) {
-            //     ((char *)&input_bytes)[i + bytes_read] = bytes_remaining;
-            // }
             int bytes_remaining = ((char *)&second_output_buffer)[0];
             first_output_buffer ^= key;
             bytes_written = fwrite((char *)&first_output_buffer, 1, BLOCK_SIZE - bytes_remaining, output_file);
@@ -94,17 +74,10 @@ void decrypt(FILE *input_file, FILE *output_file, uint32_t key) {
             bytes_written = fwrite((char *)&temp, 1, BLOCK_SIZE, output_file);
         }
         
-        // decrypt and write out
+        // pass on buffers
         output_bytes = input_bytes;
         first_output_buffer = second_output_buffer;
         second_output_buffer = output_bytes;
-        
-        // if (bytes_written != 4) {
-        //     perror("Error writing to file");
-        //     fclose(output_file);
-        //     exit(EXIT_FAILURE);
-        // }
-        // key = input_bytes;
 
         if (past_first_iter) {
             past_second_iter = 1;
