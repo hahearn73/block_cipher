@@ -10,7 +10,7 @@ void encrypt(FILE *input_file, FILE *output_file, uint32_t key) {
     uint32_t input_bytes, output_bytes = 0;
     int eof_reached = 0;
     size_t bytes_read, bytes_written;
-    char bytes_remaining;
+    size_t bytes_remaining;
     while (!eof_reached) {
         bytes_read = fread(buffer, 1, BLOCK_SIZE, input_file);
 
@@ -39,6 +39,7 @@ void encrypt(FILE *input_file, FILE *output_file, uint32_t key) {
         if (bytes_written != BLOCK_SIZE) {
             perror("Error writing to file");
             fclose(output_file);
+            fclose(input_file);
             exit(EXIT_FAILURE);
         }
         key = output_bytes;
@@ -54,8 +55,8 @@ void encrypt(FILE *input_file, FILE *output_file, uint32_t key) {
 
 void decrypt(FILE *input_file, FILE *output_file, uint32_t key) {
     char buffer[BLOCK_SIZE];
-    uint32_t input_bytes, output_bytes, first_output_buffer, second_output_buffer = 0;
-    int eof_reached, past_first_iter, past_second_iter = 0;
+    uint32_t input_bytes, first_output_buffer, second_output_buffer = 0;
+    int past_first_iter, past_second_iter = 0;
     size_t bytes_read, bytes_written;
     
     while (1) {
@@ -65,6 +66,12 @@ void decrypt(FILE *input_file, FILE *output_file, uint32_t key) {
             int bytes_remaining = ((char *)&second_output_buffer)[0];
             first_output_buffer ^= key;
             bytes_written = fwrite((char *)&first_output_buffer, 1, BLOCK_SIZE - bytes_remaining, output_file);
+            if (bytes_written != (size_t)(BLOCK_SIZE - bytes_remaining)) {
+                perror("Error writing to file");
+                fclose(output_file);
+                fclose(input_file);
+                exit(EXIT_FAILURE);                
+            }
             return;
         }
         memcpy(&input_bytes, buffer, BLOCK_SIZE);
@@ -72,12 +79,17 @@ void decrypt(FILE *input_file, FILE *output_file, uint32_t key) {
             uint32_t temp = first_output_buffer ^ key;
             key = first_output_buffer;
             bytes_written = fwrite((char *)&temp, 1, BLOCK_SIZE, output_file);
+            if (bytes_written != BLOCK_SIZE) {
+                perror("Error writing to file");
+                fclose(output_file);
+                fclose(input_file);
+                exit(EXIT_FAILURE);                
+            }
         }
         
         // pass on buffers
-        output_bytes = input_bytes;
         first_output_buffer = second_output_buffer;
-        second_output_buffer = output_bytes;
+        second_output_buffer = input_bytes;
 
         if (past_first_iter) {
             past_second_iter = 1;
