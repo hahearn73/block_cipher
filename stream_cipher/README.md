@@ -6,7 +6,7 @@ Run `make` to create executable and `make clean` to clean directory
 
 ### Execution
 ```
-$ ./xor_cipher <-e|-d> <key> <source_file> <destination_file>
+$ ./stream_cipher <-e|-d> <key> <source_file> <destination_file>
 ```
 where `-e` specifies encryption and `-d` specifies decryption
 
