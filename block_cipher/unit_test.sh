@@ -34,4 +34,4 @@ echo "12345" > test.txt
 ./block_cipher -e abcd test.txt out.txt
 ./block_cipher -d abcd out.txt result.txt
 diff test.txt result.txt
-rm out.txt result.txt block_cipher
+rm out.txt result.txt block_cipher test.txt
