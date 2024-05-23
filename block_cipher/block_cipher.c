@@ -33,7 +33,6 @@ void encrypt(FILE *input_file, FILE *output_file, uint32_t key) {
         }
         
         // encrypt and write out
-        output_bytes = input_bytes;
         output_bytes = input_bytes ^ key;
         bytes_written = fwrite((char *)&output_bytes, 1, BLOCK_SIZE, output_file);
         if (bytes_written != BLOCK_SIZE) {

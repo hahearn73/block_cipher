@@ -3,20 +3,6 @@
 #include <string.h>
 #include <stdint.h>
 
-void decrypt(FILE *input_file, FILE *output_file, uint8_t key) {
-    char byte;
-    while ((byte = fgetc(input_file)) != EOF) {
-        byte ^= key;
-        if (fputc(byte, output_file) == EOF) {
-            perror("Error writing to output file");
-            fclose(input_file);
-            fclose(output_file);
-            exit(EXIT_FAILURE);
-        }
-        key = byte;
-    }
-}
-
 void encrypt(FILE *input_file, FILE *output_file, uint8_t key) {
     char output_byte, input_byte;
     while ((input_byte = fgetc(input_file)) != EOF) {
@@ -30,6 +16,20 @@ void encrypt(FILE *input_file, FILE *output_file, uint8_t key) {
         key = input_byte;
     }
 }
+
+void decrypt(FILE *input_file, FILE *output_file, uint8_t key) {
+    char byte;
+    while ((byte = fgetc(input_file)) != EOF) {
+        key ^= byte;
+        if (fputc(key, output_file) == EOF) {
+            perror("Error writing to output file");
+            fclose(input_file);
+            fclose(output_file);
+            exit(EXIT_FAILURE);
+        }
+    }
+}
+
 
 int main(int argc, char *argv[]) {
     // usage check and get command line args
