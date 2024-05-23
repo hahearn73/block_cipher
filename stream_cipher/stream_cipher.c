@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdint.h>
 
-void encrypt(FILE *input_file, FILE *output_file, uint8_t key) {
+void decrypt(FILE *input_file, FILE *output_file, uint8_t key) {
     char byte;
     while ((byte = fgetc(input_file)) != EOF) {
         byte ^= key;
@@ -17,7 +17,7 @@ void encrypt(FILE *input_file, FILE *output_file, uint8_t key) {
     }
 }
 
-void decrypt(FILE *input_file, FILE *output_file, uint8_t key) {
+void encrypt(FILE *input_file, FILE *output_file, uint8_t key) {
     char output_byte, input_byte;
     while ((input_byte = fgetc(input_file)) != EOF) {
         output_byte = input_byte ^ key;

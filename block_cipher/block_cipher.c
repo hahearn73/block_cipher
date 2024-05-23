@@ -42,7 +42,7 @@ void encrypt(FILE *input_file, FILE *output_file, uint32_t key) {
             fclose(input_file);
             exit(EXIT_FAILURE);
         }
-        key = output_bytes;
+        key = input_bytes;
     }
 
     // include padding if not already done
@@ -76,9 +76,8 @@ void decrypt(FILE *input_file, FILE *output_file, uint32_t key) {
         }
         memcpy(&input_bytes, buffer, BLOCK_SIZE);
         if (past_second_iter) {
-            uint32_t temp = first_output_buffer ^ key;
-            key = first_output_buffer;
-            bytes_written = fwrite((char *)&temp, 1, BLOCK_SIZE, output_file);
+            key ^= first_output_buffer;
+            bytes_written = fwrite((char *)&key, 1, BLOCK_SIZE, output_file);
             if (bytes_written != BLOCK_SIZE) {
                 perror("Error writing to file");
                 fclose(output_file);
