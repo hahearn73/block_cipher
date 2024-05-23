@@ -74,17 +74,7 @@ int main(int argc, char *argv[]) {
     }
 
     // close files
-    if (ferror(input_file)) {
-        perror("Error reading input file");
-        fclose(input_file);
-        return EXIT_FAILURE;
-    }
     fclose(input_file);
-    if (ferror(output_file)) {
-        perror("Error reading output file");
-        fclose(output_file);
-        return EXIT_FAILURE;
-    }
     fclose(output_file);
 
     return EXIT_SUCCESS;
