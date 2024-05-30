@@ -55,7 +55,7 @@ void encrypt(FILE *input_file, FILE *output_file, uint32_t key) {
 void decrypt(FILE *input_file, FILE *output_file, uint32_t key) {
     char buffer[BLOCK_SIZE];
     uint32_t input_bytes, first_output_buffer, second_output_buffer = 0;
-    int past_first_iter, past_second_iter = 0;
+    int past_first_iter = 0, past_second_iter = 0;
     size_t bytes_read, bytes_written;
     
     while (1) {
